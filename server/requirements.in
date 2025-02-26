@@ -1,0 +1,8 @@
+autopep8
+mypy
+python-dateutil
+pylint
+requests
+schedule
+types-python-dateutil
+types-requests
