@@ -14,6 +14,7 @@ def _get_arguments() -> argparse.Namespace:
     parser.add_argument('-b', '--bus-stop-id', action='append', help='Bus Stop ID')
     parser.add_argument('-l', '--lat-long', action='store', help='Latitude and Longitude for weather')
     parser.add_argument('-k', '--pirate-api-key', action='store', help='API Key for Pirate Weather')
+    parser.add_argument('-r', '--recycling-calendar-url', action='store', help='URL for recycling collection calendar')
     return parser.parse_args()
 
 
@@ -58,6 +59,18 @@ class Config:
             return os.environ['LAT_LONG']
 
         raise ValueError('No lat-long provided')
+
+    @property
+    def recycling_calendar_url(self) -> str:
+        """URL for Recycling Collection Calendar"""
+
+        if self._args.lat_long:
+            return self._args.recycling_calendar_url
+
+        if 'RECYCLING_CALENDAR_URL' in os.environ:
+            return os.environ['RECYCLING_CALENDAR_URL']
+
+        raise ValueError('No recycling calendar provided')
 
     @property
     def pirate_api_key(self) -> str:

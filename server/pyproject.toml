@@ -10,4 +10,4 @@ max-line-length = 120
 [tool.mypy]
 disallow_untyped_calls = true
 mypy_path = "stubs"
-
+packages = "dashboard"

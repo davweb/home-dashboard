@@ -10,6 +10,7 @@ import time
 from typing import Any
 import schedule
 from . import oxontime
+from . import recycling
 from . import weather
 from .config import CONFIG
 
@@ -132,10 +133,30 @@ class WeatherDataSource(DataSource):
         return schedule.every(15).minutes
 
 
+class RecyclingDataSource(DataSource):
+    """DataSource to Return day and date as String"""
+
+    def get_name(self) -> str:
+        return 'recycling'
+
+    def get_data(self) -> recycling.RecyclingCollection:
+        return recycling.get_next_recycling_collection()
+
+    def format_data(self, data: dict) -> dict[str, str]:
+        return {
+            'date': data['date'].strftime('%A %d %B'),
+            'type': data['type']
+        }
+
+    def get_schedule(self):
+        return schedule.every().day.at('00:00')
+
+
 DATA_SOURCES = [
     DateDataSource(),
     BusDataSource(),
-    WeatherDataSource()
+    WeatherDataSource(),
+    RecyclingDataSource()
 ]
 DATA = {}
 
