@@ -11,6 +11,7 @@ from typing import Any
 import schedule
 from . import oxontime
 from . import recycling
+from . import unifi
 from . import weather
 from .config import CONFIG
 
@@ -88,10 +89,12 @@ class BusDataSource(DataSource):
         bus_times = []
 
         for name, buses in data:
-            bus_times.append({
-                'name': name,
-                'buses': [(route, dest, self._format_due(due, datetime.now())) for route, dest, due in buses]
-            })
+            bus_times.append({'name': name,
+                              'buses': [{'route': route,
+                                         'destination': dest,
+                                         'due': self._format_due(due, datetime.now())} for route,
+                                        dest,
+                                        due in buses]})
 
         return bus_times
 
@@ -152,11 +155,28 @@ class RecyclingDataSource(DataSource):
         return schedule.every().day.at('00:00')
 
 
+class AtHomeDataSource(DataSource):
+    """DataSource to show who is at home"""
+
+    def get_name(self) -> str:
+        return 'at_home'
+
+    def get_data(self) -> dict[str, bool]:
+        return unifi.get_online_status()
+
+    def format_data(self, data: dict[str, bool]) -> dict[str, bool]:
+        return data
+
+    def get_schedule(self):
+        return schedule.every(1).minutes
+
+
 DATA_SOURCES = [
     DateDataSource(),
     BusDataSource(),
     WeatherDataSource(),
-    RecyclingDataSource()
+    RecyclingDataSource(),
+    AtHomeDataSource()
 ]
 DATA = {}
 

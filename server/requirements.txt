@@ -42,10 +42,14 @@ python-dateutil==2.9.0.post0
     #   -r requirements.in
     #   icalendar
     #   recurring-ical-events
+pyunifi==2.21
+    # via -r requirements.in
 recurring-ical-events==3.6.0
     # via -r requirements.in
 requests==2.32.3
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   pyunifi
 schedule==1.2.2
     # via -r requirements.in
 six==1.17.0

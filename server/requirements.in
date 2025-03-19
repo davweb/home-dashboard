@@ -6,6 +6,7 @@ pylint
 recurring-ical-events
 requests
 schedule
+pyunifi
 types-icalendar
 types-python-dateutil
 types-requests

@@ -15,6 +15,11 @@ def _get_arguments() -> argparse.Namespace:
     parser.add_argument('-l', '--lat-long', action='store', help='Latitude and Longitude for weather')
     parser.add_argument('-k', '--pirate-api-key', action='store', help='API Key for Pirate Weather')
     parser.add_argument('-r', '--recycling-calendar-url', action='store', help='URL for recycling collection calendar')
+    parser.add_argument('-n', '--unifi-host', action='store', help='Unifi Controller hostname')
+    parser.add_argument('-u', '--unifi-username', action='store', help='Unifi Controller username')
+    parser.add_argument('-w', '--unifi-password', action='store', help='Unifi Controller password')
+    parser.add_argument('-m', '--unifi-mac', action='append', help='Unifi Controller password')
+
     return parser.parse_args()
 
 
@@ -95,6 +100,66 @@ class Config:
             raise ValueError(f'Invalid LOG_LEVEL: {log_level_name}')
 
         return log_level
+
+    @property
+    def unifi_hostname(self) -> str:
+        """Unifi Controller hostname"""
+
+        if self._args.unifi_host:
+            return self._args.unifi_host
+
+        if 'UNIFI_HOST' in os.environ:
+            return os.environ['UNIFI_HOST']
+
+        raise ValueError('No Unifi Controller hostname provided')
+
+    @property
+    def unifi_username(self) -> str:
+        """Unifi Controller username"""
+
+        if self._args.unifi_username:
+            return self._args.unifi_username
+
+        if 'UNIFI_USERNAME' in os.environ:
+            return os.environ['UNIFI_USERNAME']
+
+        raise ValueError('No Unifi Controller username provided')
+
+    @property
+    def unifi_password(self) -> str:
+        """Unifi Controller password"""
+
+        if self._args.unifi_password:
+            return self._args.unifi_password
+
+        if 'UNIFI_PASSWORD' in os.environ:
+            return os.environ['UNIFI_PASSWORD']
+
+        raise ValueError('No Unifi Controller password provided')
+
+    @property
+    def unifi_macs(self) -> dict[str, str]:
+        """Unifi Controller MACs"""
+
+        if self._args.unifi_mac:
+            macs = {}
+
+            for pair in self._args.unifi_mac:
+                name, mac = pair.split('=')
+                macs[name] = mac
+
+            return macs
+
+        if 'UNIFI_MACS' in os.environ:
+            macs = {}
+
+            for pair in os.environ['UNIFI_MACS'].split(','):
+                name, mac = pair.split('=')
+                macs[name] = mac
+
+            return macs
+
+        raise ValueError('No Unifi Controller macs to monitor provided')
 
 
 CONFIG = Config()
